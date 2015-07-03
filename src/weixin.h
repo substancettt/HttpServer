@@ -8,11 +8,12 @@
 
 enum Error_Code
 {
-	Error_Invalid_Url = 1,
-	Error_Invalid_Signature_Token = 2,
-	Error_Invalid_Signature_Equal_Sign = 2,
-	Error_Invalid_Signature_And_Sign = 2,
-	Error_Code = 3
+	Return_Code_OK = 0,
+	Return_Code_Invalid_Url = 1,
+	Return_Code_Invalid_Signature_Token = 2,
+	Return_Code_Invalid_Signature_Equal_Sign = 2,
+	Return_Code_Invalid_Signature_And_Sign = 2,
+	Return_Code_Code = 3
 };
 
 int wx_validate(const char * query);
