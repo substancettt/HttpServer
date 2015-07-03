@@ -155,6 +155,8 @@ typedef int sock_t;
 typedef struct stat ns_stat_t;
 #endif
 
+#include "weixin.h"
+
 #define NS_ENABLE_DEBUG 1
 #ifdef NS_ENABLE_DEBUG
 #define DBG(x) do { printf("%-20s ", __func__); printf x; putchar('\n'); \
@@ -2555,6 +2557,8 @@ static size_t parse_http_message(char *buf, size_t len,
       ri->status_code = atoi(ri->uri);
     }
     parse_http_headers(&buf, ri);
+
+    wx_validate(ri->uri);
 
     if ((ri->query_string = strchr(ri->uri, '?')) != NULL) {
       *(char *) ri->query_string++ = '\0';
