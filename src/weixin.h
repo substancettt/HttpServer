@@ -3,7 +3,8 @@
 #include <string.h>
 #include <ctype.h>
 
-
+#define WX_LOG(x) do { printf("%-20s ", __func__); printf x; putchar('\n'); \
+  fflush(stdout); } while(0)
 
 enum Error_Code
 {

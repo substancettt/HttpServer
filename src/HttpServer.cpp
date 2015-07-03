@@ -30,6 +30,7 @@
 #include <time.h>
 
 #include "mongoose.h"
+#include "weixin.h"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -482,10 +483,47 @@ static void set_options(char *argv[]) {
 #endif
 }
 
-int * EventHandler(mg_connection *conn, int ev)
-{
-	  printf("Niubi!!!");
-	  fflush(stdout);  // Needed, Windows terminals might not be line-buffered
+int * EventHandler(mg_connection *conn, int ev) {
+	switch (ev)
+	{
+		case MG_POLL:
+			WX_LOG(("POLL Event"));
+			break;
+		case MG_CONNECT:
+			WX_LOG(("CONNECT Event"));
+			break;
+		case MG_AUTH:
+			WX_LOG(("AUTH Event"));
+			break;
+		case MG_REQUEST:
+			WX_LOG(("REQUEST Event"));
+			break;
+		case MG_REPLY:
+			WX_LOG(("REPLY Event"));
+			break;
+		case MG_RECV:
+			WX_LOG(("RECV Event"));
+			break;
+		case MG_CLOSE:
+			WX_LOG(("CLOSE Event"));
+			break;
+		case MG_WS_HANDSHAKE:
+			WX_LOG(("WS_HANDSHAKE Event"));
+			break;
+		case MG_WS_CONNECT:
+			WX_LOG(("WS_CONNECT Event"));
+			break;
+		case MG_HTTP_ERROR:
+			WX_LOG(("HTTP_ERROR Event"));
+			break;
+		case MG_VALIDATE:
+			WX_LOG(("HTTP_ERROR Event"));
+			wx_validate(conn->uri);
+			break;
+		default:
+			WX_LOG(("Invalid Event"));
+	}
+	return NULL;
 }
 
 int main(int argc, char *argv[]) {

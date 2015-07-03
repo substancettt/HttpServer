@@ -2,8 +2,7 @@
 #include <string.h>
 #include "weixin.h"
 
-#define WX_LOG(x) do { printf("%-20s ", __func__); printf x; putchar('\n'); \
-  fflush(stdout); } while(0)
+
 
 using namespace std;
 
