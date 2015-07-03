@@ -15,4 +15,4 @@ enum Error_Code
 	Error_Code = 3
 };
 
-int wx_validate(const char *uri);
+int wx_validate(const char * query);

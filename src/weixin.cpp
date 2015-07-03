@@ -6,7 +6,7 @@
 
 using namespace std;
 
-int wx_validate(const char *uri)
+int wx_validate(const char * query)
 {
 	size_t posToken;
 	size_t posEqualSign;
@@ -14,17 +14,17 @@ int wx_validate(const char *uri)
 	string signature;
 	string sTemp;
 
-	if (NULL == uri)
+	if (NULL == query)
 	{
 		WX_LOG(("ERROR: Invalid URL."));
 		return Error_Invalid_Url;
 	}
 
-	sTemp.assign(uri);
+	sTemp.assign(query);
 	posToken = sTemp.find("signature");
 	if (string::npos == posToken)
 	{
-		WX_LOG(("ERROR: Invalid URL: %s.", uri));
+		WX_LOG(("ERROR: Invalid Query: %s.", query));
 		return Error_Invalid_Signature_Token;
 	}
 	else
@@ -32,15 +32,16 @@ int wx_validate(const char *uri)
 		posEqualSign = sTemp.find("=");
 		if (string::npos == posEqualSign)
 		{
-			WX_LOG(("ERROR: Invalid URL: %s.", uri));
+			WX_LOG(("ERROR: Invalid Query: %s.", query));
 			return Error_Invalid_Signature_Equal_Sign;
 		}
 		posAndSign = sTemp.find("&");
 		if (string::npos == posAndSign)
 		{
-			WX_LOG(("ERROR: Invalid URL: %s.", uri));
+			WX_LOG(("ERROR: Invalid Query: %s.", query));
 			return Error_Invalid_Signature_And_Sign;
 		}
 		signature = sTemp.substr(posEqualSign, posAndSign - posEqualSign);
+		WX_LOG(("INFO: Signature is %s.", signature.c_str()));
 	}
 }

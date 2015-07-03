@@ -4757,12 +4757,6 @@ static void try_parse(struct connection *conn) {
     //DBG(("%p [%.*s]", conn, conn->request_len, conn->request));
     iobuf_remove(io, conn->request_len);
 
-    int res = call_user(conn, MG_VALIDATE);
-    if (MG_TRUE == res)
-    {
-  	  DBG(("HTTP Message handled."));
-    }
-
     conn->request_len = parse_http_message(conn->request, conn->request_len,
                                            &conn->mg_conn);
     if (conn->request_len > 0) {
@@ -4826,6 +4820,13 @@ static void on_recv_data(struct connection *conn) {
 #ifndef MONGOOSE_NO_WEBSOCKET
     send_websocket_handshake_if_requested(&conn->mg_conn);
 #endif
+
+    int res = call_user(conn, MG_VALIDATE);
+    if (MG_TRUE == res)
+    {
+  	  DBG(("HTTP Message handled."));
+    }
+
     send_continue_if_expected(conn);
     open_local_endpoint(conn, 0);
   }

@@ -518,7 +518,7 @@ int * EventHandler(mg_connection *conn, int ev) {
 			break;
 		case MG_VALIDATE:
 			WX_LOG(("HTTP_ERROR Event"));
-			wx_validate(conn->uri);
+			wx_validate(conn->query_string);
 			break;
 		default:
 			WX_LOG(("Invalid Event"));
