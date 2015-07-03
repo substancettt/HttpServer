@@ -150,7 +150,7 @@ static void show_usage_and_exit(void) {
   exit(EXIT_FAILURE);
 }
 
-int * EventHandler(mg_connection *conn, int ev);
+int * EventHandler(connection *conn, int ev);
 #define EV_HANDLER EventHandler
 
 static char *sdup(const char *str) {
@@ -483,7 +483,7 @@ static void set_options(char *argv[]) {
 #endif
 }
 
-int * EventHandler(mg_connection *conn, int ev) {
+int * EventHandler(connection *conn, int ev) {
 	switch (ev)
 	{
 		case MG_POLL:
@@ -518,7 +518,7 @@ int * EventHandler(mg_connection *conn, int ev) {
 			break;
 		case MG_VALIDATE:
 			WX_LOG(("HTTP_ERROR Event"));
-			wx_validate(conn->uri);
+			wx_validate(conn->mg_conn.uri);
 			break;
 		default:
 			WX_LOG(("Invalid Event"));
