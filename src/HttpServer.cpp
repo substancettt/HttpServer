@@ -66,7 +66,7 @@ typedef struct stat file_stat_t;
 #endif
 
 #define DIRSEP '/'
-//#define __cdecl
+#define __cdecl
 #define abs_path(rel, abs, abs_size) realpath((rel), (abs))
 #endif // _WIN32
 
@@ -82,7 +82,7 @@ static char server_name[50];        // Set by init_server_name()
 static char s_config_file[PATH_MAX];  // Set by process_command_line_arguments
 static struct mg_server *server;    // Set by start_mongoose()
 static const char *s_default_document_root = ".";
-static const char *s_default_listening_port = "8080";
+static const char *s_default_listening_port = "80";
 static char **s_argv = { NULL };
 
 static void set_options(char *argv[]);

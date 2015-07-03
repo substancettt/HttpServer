@@ -2524,15 +2524,8 @@ static int is_valid_http_method(const char *s) {
 static size_t parse_http_message(char *buf, size_t len,
                                  struct mg_connection *ri) {
   int is_request, n;
-  int res;
 
   DBG(("HTTP Message is : \r\n %s", buf));
-
-  res = call_user(ri, MG_VALIDATE);
-  if (MG_TRUE == res)
-  {
-	  DBG(("HTTP Message handled."));
-  }
 
   // Reset the connection. Make sure that we don't touch fields that are
   // set elsewhere: remote_ip, remote_port, server_param
@@ -4763,6 +4756,13 @@ static void try_parse(struct connection *conn) {
     memcpy(conn->request, io->buf, conn->request_len);
     //DBG(("%p [%.*s]", conn, conn->request_len, conn->request));
     iobuf_remove(io, conn->request_len);
+
+    int res = call_user(conn, MG_VALIDATE);
+    if (MG_TRUE == res)
+    {
+  	  DBG(("HTTP Message handled."));
+    }
+
     conn->request_len = parse_http_message(conn->request, conn->request_len,
                                            &conn->mg_conn);
     if (conn->request_len > 0) {
