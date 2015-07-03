@@ -58,32 +58,7 @@ struct mg_connection {
   void *handler;
 };
 
-// Local endpoint representation
-union endpoint {
-  int fd;                     // Opened regular local file
-  struct ns_connection *nc;   // CGI or proxy->target connection
-};
-
-enum endpoint_type {
- EP_NONE, EP_FILE, EP_CGI, EP_USER, EP_PUT, EP_CLIENT, EP_PROXY
-};
-
-struct connection {
-  struct ns_connection *ns_conn;  // NOTE(lsm): main.c depends on this order
-  struct mg_connection mg_conn;
-  struct mg_server *server;
-  union endpoint endpoint;
-  enum endpoint_type endpoint_type;
-  char *path_info;
-  char *request;
-  int64_t num_bytes_recv; // Total number of bytes received
-  int64_t cl;             // Reply content length, for Range support
-  ssize_t request_len;  // Request length, including last \r\n after last header
-};
-
 struct mg_server; // Opaque structure describing server instance
-
-
 enum mg_result { MG_FALSE, MG_TRUE, MG_MORE };
 enum mg_event {
   MG_POLL = 100,  // If callback returns MG_TRUE connection closes

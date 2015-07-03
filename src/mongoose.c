@@ -144,7 +144,7 @@ typedef struct _stati64 ns_stat_t;
 #include <sys/select.h>
 #define closesocket(x) close(x)
 #ifndef __OS2__
-//#define __cdecl
+#define __cdecl
 #else
 #include <sys/time.h>
 typedef int socklen_t;
@@ -1503,11 +1503,34 @@ struct mg_server {
   char *config_options[NUM_OPTIONS];
 };
 
+// Local endpoint representation
+union endpoint {
+  int fd;                     // Opened regular local file
+  struct ns_connection *nc;   // CGI or proxy->target connection
+};
+
+enum endpoint_type {
+ EP_NONE, EP_FILE, EP_CGI, EP_USER, EP_PUT, EP_CLIENT, EP_PROXY
+};
+
 #define MG_HEADERS_SENT NSF_USER_1
 #define MG_USING_CHUNKED_API NSF_USER_2
 #define MG_CGI_CONN NSF_USER_3
 #define MG_PROXY_CONN NSF_USER_4
 #define MG_PROXY_DONT_PARSE NSF_USER_5
+
+struct connection {
+  struct ns_connection *ns_conn;  // NOTE(lsm): main.c depends on this order
+  struct mg_connection mg_conn;
+  struct mg_server *server;
+  union endpoint endpoint;
+  enum endpoint_type endpoint_type;
+  char *path_info;
+  char *request;
+  int64_t num_bytes_recv; // Total number of bytes received
+  int64_t cl;             // Reply content length, for Range support
+  ssize_t request_len;  // Request length, including last \r\n after last header
+};
 
 #define MG_CONN_2_CONN(c) ((struct connection *) ((char *) (c) - \
   offsetof(struct connection, mg_conn)))
