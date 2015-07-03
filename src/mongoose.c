@@ -2558,8 +2558,6 @@ static size_t parse_http_message(char *buf, size_t len,
     }
     parse_http_headers(&buf, ri);
 
-    wx_validate(ri->uri);
-
     if ((ri->query_string = strchr(ri->uri, '?')) != NULL) {
       *(char *) ri->query_string++ = '\0';
     }

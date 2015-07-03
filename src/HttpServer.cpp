@@ -149,7 +149,8 @@ static void show_usage_and_exit(void) {
   exit(EXIT_FAILURE);
 }
 
-#define EV_HANDLER NULL
+int * EventHandler(mg_connection *conn, int ev);
+#define EV_HANDLER EventHandler
 
 static char *sdup(const char *str) {
   char *p;
@@ -391,7 +392,7 @@ int modify_passwords_file(const char *fname, const char *domain,
 
 static void start_mongoose(int argc, char *argv[]) {
   s_argv = argv;
-  if ((server = mg_create_server(NULL, EV_HANDLER)) == NULL) {
+  if ((server = mg_create_server(NULL, (mg_handler_t)EV_HANDLER)) == NULL) {
     die("%s", "Failed to start Mongoose.");
   }
 
@@ -479,6 +480,12 @@ static void set_options(char *argv[]) {
 #ifndef _WIN32
   signal(SIGCHLD, signal_handler);
 #endif
+}
+
+int * EventHandler(mg_connection *conn, int ev)
+{
+	  printf("Niubi!!!");
+	  fflush(stdout);  // Needed, Windows terminals might not be line-buffered
 }
 
 int main(int argc, char *argv[]) {

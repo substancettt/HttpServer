@@ -55,6 +55,7 @@ struct mg_connection {
   void *server_param;         // Parameter passed to mg_create_server()
   void *connection_param;     // Placeholder for connection-specific data
   void *callback_param;
+  void *handler;
 };
 
 struct mg_server; // Opaque structure describing server instance
