@@ -32,6 +32,7 @@
 #include "mongoose.h"
 #include "weixin.h"
 
+
 #ifdef _WIN32
 #include <windows.h>
 #include <direct.h>  // For chdir()
@@ -484,6 +485,7 @@ static void set_options(char *argv[]) {
 }
 
 int * EventHandler(mg_connection *conn, int ev) {
+	const char * response;
 	switch (ev)
 	{
 		case MG_POLL:
@@ -518,7 +520,8 @@ int * EventHandler(mg_connection *conn, int ev) {
 			break;
 		case MG_VALIDATE:
 			WX_LOG(("HTTP_ERROR Event"));
-			wx_validate(conn->query_string);
+			response = wx_validate(conn->query_string);
+			mg_send_data(conn, response, strlen(response));
 			break;
 		default:
 			WX_LOG(("Invalid Event"));

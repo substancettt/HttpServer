@@ -9,7 +9,7 @@
 
 using namespace std;
 
-static string token = "weixin";
+static string sToken = "weixin";
 
 int getTokenValue(char ** query, const char * token, string & value)
 {
@@ -24,7 +24,7 @@ int getTokenValue(char ** query, const char * token, string & value)
 	if ((NULL == token) && (string::npos == posToken))
 	{
 		WX_LOG(("ERROR: Invalid Query: %s.", *query));
-		return Return_Code_Invalid_Signature_Token;
+		return Return_Code_Invalid_Token;
 	}
 	else
 	{
@@ -32,7 +32,7 @@ int getTokenValue(char ** query, const char * token, string & value)
 		if (string::npos == posEqualSign)
 		{
 			WX_LOG(("ERROR: Invalid Query: %s.", *query));
-			return Return_Code_Invalid_Signature_Equal_Sign;
+			return Return_Code_Invalid_Equal_Sign;
 		}
 		posAndSign = sTemp.find("&");
 		if (string::npos == posAndSign)
@@ -44,7 +44,7 @@ int getTokenValue(char ** query, const char * token, string & value)
 			else
 			{
 				WX_LOG(("ERROR: Invalid Query: %s.", *query));
-				return Return_Code_Invalid_Signature_And_Sign;
+				return Return_Code_Invalid_And_Sign;
 			}
 		}
 		else
@@ -97,7 +97,7 @@ int validateSignature(string sSignature, string sTimeStamp, string sNonce)
 	string sSig;
 
     std::vector< std::string > vecStr;
-    vecStr.push_back(token);
+    vecStr.push_back(sToken);
     vecStr.push_back(sTimeStamp);
     vecStr.push_back(sNonce);
     sort(vecStr.begin(), vecStr.end());
@@ -122,44 +122,51 @@ int validateSignature(string sSignature, string sTimeStamp, string sNonce)
 	return 0;
 }
 
-int wx_validate(const char * query)
+const char * wx_validate(const char * query)
 {
-	int ret = Return_Code_OK;
+	int ret = Return_Code_Invalid_Url;
 	string signature;
-	string echostr;
 	string timestamp;
 	string nonce;
+	string echostr;
 	char * pos = (char *)query;
 
 	if (NULL == query)
 	{
 		WX_LOG(("ERROR: Invalid URL."));
-		return Return_Code_Invalid_Url;
+		return NULL;
 	}
 
 	ret = getTokenValue(&pos, "signature", signature);
-	if (ret > 0)
+	if (Return_Code_OK != ret)
 	{
-		return ret;
+		return NULL;
 	}
 
 	ret = getTokenValue(&pos, "echostr", echostr);
-	if (ret > 0)
+	if (Return_Code_OK != ret)
 	{
-		return ret;
+		return NULL;
 	}
 
 	ret = getTokenValue(&pos, "timestamp", timestamp);
-	if (ret > 0)
+	if (Return_Code_OK != ret)
 	{
-		return ret;
+		return NULL;
 	}
 
 	ret = getTokenValue(&pos, "nonce", nonce);
-	if (ret > 0)
+	if (Return_Code_OK != ret)
 	{
-		return ret;
+		return NULL;
 	}
 
-	return validateSignature(signature, timestamp, nonce);
+	if (validateSignature(signature, timestamp, nonce))
+	{
+		return echostr.c_str();
+	}
+	else
+	{
+		return NULL;
+	}
 }
