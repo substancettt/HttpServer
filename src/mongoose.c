@@ -2821,6 +2821,7 @@ size_t mg_send(struct mg_connection *c, const void *data, int data_len) {
   struct connection *conn = MG_CONN_2_CONN(c);
   terminate_headers(c);
   ns_send(conn->ns_conn, data, data_len);
+  conn->ns_conn->flags |= NSF_FINISHED_SENDING_DATA;
   return conn->ns_conn->send_iobuf.len;
 }
 
