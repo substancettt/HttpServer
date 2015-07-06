@@ -4827,8 +4827,8 @@ static void on_recv_data(struct connection *conn) {
   	  DBG(("HTTP Message handled."));
     }
 
-    send_continue_if_expected(conn);
-    open_local_endpoint(conn, 0);
+//    send_continue_if_expected(conn);
+//    open_local_endpoint(conn, 0);
   }
 
 #ifndef MONGOOSE_NO_CGI
