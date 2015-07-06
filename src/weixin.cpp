@@ -90,14 +90,14 @@ string toHexString(const char * pInData)
 
 }
 
-int validateSignature(string sToken, string sSignature, string sTimeStamp, string sNonce)
+int validateSignature(string sSignature, string sTimeStamp, string sNonce)
 {
 	char sha1[21] = {0};
 
 	string sSig;
 
     std::vector< std::string > vecStr;
-    vecStr.push_back(sToken);
+    vecStr.push_back(token);
     vecStr.push_back(sTimeStamp);
     vecStr.push_back(sNonce);
     sort(vecStr.begin(), vecStr.end());
@@ -161,5 +161,5 @@ int wx_validate(const char * query)
 		return ret;
 	}
 
-	return validateSignature(signature, token, timestamp, nonce);
+	return validateSignature(signature, timestamp, nonce);
 }
