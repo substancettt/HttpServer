@@ -2820,7 +2820,7 @@ size_t mg_send_data(struct mg_connection *c, const void *data, int data_len) {
 size_t mg_send(struct mg_connection *c, const void *data, int data_len) {
   struct connection *conn = MG_CONN_2_CONN(c);
   terminate_headers(c);
-  ns_send(MG_CONN_2_CONN(c), data, data_len);
+  ns_send(conn->ns_conn, data, data_len);
   return conn->ns_conn->send_iobuf.len;
 }
 
