@@ -105,6 +105,7 @@ struct mg_connection *mg_connect(struct mg_server *, const char *);
 void mg_send_status(struct mg_connection *, int status_code);
 void mg_send_header(struct mg_connection *, const char *name, const char *val);
 size_t mg_send_data(struct mg_connection *, const void *data, int data_len);
+size_t mg_send(struct mg_connection *, const void *data, int data_len);
 size_t mg_printf_data(struct mg_connection *, const char *format, ...);
 size_t mg_vprintf_data(struct mg_connection *, const char *format, va_list ap);
 size_t mg_write(struct mg_connection *, const void *buf, size_t len);

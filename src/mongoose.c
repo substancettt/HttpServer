@@ -2817,6 +2817,13 @@ size_t mg_send_data(struct mg_connection *c, const void *data, int data_len) {
   return conn->ns_conn->send_iobuf.len;
 }
 
+size_t mg_send(struct mg_connection *c, const void *data, int data_len) {
+  struct connection *conn = MG_CONN_2_CONN(c);
+  terminate_headers(c);
+  ns_send(MG_CONN_2_CONN(c), data, data_len);
+  return conn->ns_conn->send_iobuf.len;
+}
+
 size_t mg_printf_data(struct mg_connection *c, const char *fmt, ...) {
   va_list ap;
   int ret;

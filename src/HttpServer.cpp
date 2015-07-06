@@ -523,9 +523,7 @@ int * EventHandler(mg_connection *conn, int ev) {
 			response = wx_validate(conn->query_string);
 			if (NULL != response)
 			{
-				mg_send_status(conn, conn->status_code);
-				mg_send_header(conn, "Content-Type", "text/plain");
-				mg_send_data(conn, response, strlen(response));
+				mg_send(conn, response, strlen(response));
 			}
 			break;
 		default:
