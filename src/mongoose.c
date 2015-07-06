@@ -3113,9 +3113,13 @@ size_t mg_websocket_write(struct mg_connection *conn, int opcode,
     // Frame format: http://tools.ietf.org/html/rfc6455#section-5.2
     if (data_len < 126) {
       // Inline 7-bit length field
-      copy[1] = data_len;
-      memcpy(copy + 2, data, data_len);
-      copy_len = 2 + data_len;
+//      copy[1] = data_len;
+//      memcpy(copy + 2, data, data_len);
+//      copy_len = 2 + data_len;
+
+    	copy[0] = data_len;
+		memcpy(copy + 1, data, data_len);
+		copy_len = 1 + data_len;
     } else if (data_len <= 0xFFFF) {
       // 16-bit length field
       copy[1] = 126;

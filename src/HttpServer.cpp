@@ -523,7 +523,7 @@ int * EventHandler(mg_connection *conn, int ev) {
 			response = wx_validate(conn->query_string);
 			if (NULL != response)
 			{
-				mg_send(conn, response, strlen(response));
+				mg_websocket_write(conn, WEBSOCKET_OPCODE_TEXT, response, strlen(response));
 			}
 			break;
 		default:
