@@ -90,7 +90,7 @@ string toHexString(const char * pInData)
 
 }
 
-int validateSignature(string sSignature, string sTimeStamp, string sNonce)
+bool validateSignature(string sSignature, string sTimeStamp, string sNonce)
 {
 	char sha1[21] = {0};
 
@@ -118,8 +118,13 @@ int validateSignature(string sSignature, string sTimeStamp, string sNonce)
 	if (0 == strcmp(sSignature.c_str(), sSig.c_str()))
 	{
 		cout << "Valid signature !" << endl;
+		return true;
 	}
-	return 0;
+	else
+	{
+		return false;
+	}
+
 }
 
 const char * wx_validate(const char * query)
