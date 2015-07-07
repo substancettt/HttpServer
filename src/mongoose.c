@@ -2819,14 +2819,17 @@ size_t mg_send_data(struct mg_connection *c, const void *data, int data_len) {
 
 size_t mg_send(struct mg_connection *c, const char *data)
 {
+	char headers[200];
+	int headers_len = 0;
 	struct connection *conn = MG_CONN_2_CONN(c);
-	terminate_headers(c);
-	mg_send_header(c, "Transfer-Encoding", "chunked");
-	mg_send_header(c, "Content-Type", "text/html");
 
-	mg_printf_data(c, "%s", data);
+	headers_len = mg_snprintf(headers, sizeof(headers),
+			"HTTP/1.1 %d %s\r\nContent-Length: %d\r\n"
+					"Content-Type: text/plain\r\n\r\n", 200,
+			status_code_to_str(200), strlen(data));
+	ns_send(conn->ns_conn, headers, headers_len);
+	ns_send(conn->ns_conn, data, strlen(data));
 
-//	write_terminating_chunk(conn);
 	close_local_endpoint(conn);
 }
 
