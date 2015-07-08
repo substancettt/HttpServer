@@ -84,15 +84,16 @@ int responseMsg(const char * content)
 	}
 	else
 	{
-		WX_LOG(("INFO: HTTP Content is %s.", content));
 		string sPostData;
 		sPostData.assign(content);
+		getXmlField(sPostData, "ToUserName", sToUserName);
 		getXmlField(sPostData, "FromUserName", sFromUserName);
 		getXmlField(sPostData, "CreateTime", sCreateTime);
 		getXmlField(sPostData, "MsgType", sMsgType);
 		getXmlField(sPostData, "Content", sContent);
 		getXmlField(sPostData, "MsgId", sMsgId);
 
+		WX_LOG(("INFO: Msg: ToUserName is %s.", sToUserName.c_str()));
 		WX_LOG(("INFO: Msg: FromUserName is %s.", sFromUserName.c_str()));
 		WX_LOG(("INFO: Msg: CreateTime is %s.", sCreateTime.c_str()));
 		WX_LOG(("INFO: Msg: MsgType is %s.", sMsgType.c_str()));
