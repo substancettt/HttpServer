@@ -38,8 +38,45 @@ int isTokenValidationUrl(const char * query)
 	}
 }
 
+int getXmlField(const string & sPostData, const string & sField, string & sValue)
+{
+    tinyxml2::XMLDocument xmlDoc;
+    if(tinyxml2::XML_SUCCESS != xmlDoc.Parse(sPostData.c_str(), sPostData.size()))
+    {
+        return -1;
+    }
+
+    tinyxml2::XMLElement * xmlElement = xmlDoc.FirstChildElement("xml");
+    if(NULL == xmlElement)
+    {
+        return -1;
+    }
+
+    tinyxml2::XMLElement * msgElement = xmlElement->FirstChildElement(sField.c_str());
+    if(NULL == msgElement)
+    {
+        return -1;
+    }
+
+    const char * pText = msgElement->GetText();
+    if(NULL == pText)
+    {
+        return -1;
+    }
+
+    sValue = pText;
+    return 0;
+}
+
 int responseMsg(const char * content)
 {
+	string sToUserName;
+	string sFromUserName;
+	string sCreateTime;
+	string sMsgType;
+	string sContent;
+	string sMsgId;
+
 	if (NULL == content)
 	{
 		WX_LOG(("ERROR: Invalid Content."));
@@ -48,12 +85,20 @@ int responseMsg(const char * content)
 	else
 	{
 		WX_LOG(("INFO: HTTP Content is %s.", content));
+		string sPostData;
+		sPostData.assign(content);
+		getXmlField(sPostData, "FromUserName", sFromUserName);
+		getXmlField(sPostData, "CreateTime", sCreateTime);
+		getXmlField(sPostData, "MsgType", sMsgType);
+		getXmlField(sPostData, "Content", sContent);
+		getXmlField(sPostData, "MsgId", sMsgId);
+
+		WX_LOG(("INFO: Msg: FromUserName is %s.", sFromUserName.c_str()));
+		WX_LOG(("INFO: Msg: CreateTime is %s.", sCreateTime.c_str()));
+		WX_LOG(("INFO: Msg: MsgType is %s.", sMsgType.c_str()));
+		WX_LOG(("INFO: Msg: Content is %s.", sContent.c_str()));
+		WX_LOG(("INFO: Msg: MsgId is %s.", sMsgId.c_str()));
 	}
-//    tinyxml2::XMLDocument xmlDoc;
-//    if(tinyxml2::XML_SUCCESS != xmlDoc.Parse(content, strlen(content)))
-//    {
-//        return 1;
-//    }
 
     return 0;
 }
