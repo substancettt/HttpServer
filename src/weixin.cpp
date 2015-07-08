@@ -6,10 +6,48 @@
 
 #include "weixin.h"
 #include "SHA1.h"
+#include "tinyxml2.h"
 
 using namespace std;
 
-static string sToken = "weixin";
+static string sToken;
+
+void setToken(const char * token)
+{
+	sToken.assign(token);
+}
+
+int isTokenValidationUrl(const char * query)
+{
+	if (NULL == query)
+	{
+		return false;
+	}
+	else
+	{
+		string sTemp;
+		sTemp.assign(query);
+		if (string::npos == sTemp.find("echostr"))
+		{
+			return false;
+		}
+		else
+		{
+			return true;
+		}
+	}
+}
+
+int responseMsg(const char * content)
+{
+    tinyxml2::XMLDocument xmlDoc;
+    if(tinyxml2::XML_SUCCESS != xmlDoc.Parse(content, strlen(content)))
+    {
+        return 1;
+    }
+
+    return 0;
+}
 
 int getTokenValue(char ** query, const char * token, string & value)
 {
@@ -109,19 +147,17 @@ bool validateSignature(string sSignature, string sTimeStamp, string sNonce)
 	newCSHA1->Final();
 	newCSHA1->GetHash((unsigned char *)sha1);
 
-	printf("sSignature is %s.\r\n", sSignature.c_str());
-	printf("sStr is %s.\r\n", sStr.c_str());
-
 	sSig = toHexString(sha1);
-	printf("sSig is %s.\r\n", sSig.c_str());
+	WX_LOG(("sSig is %s.\r\n", sSig.c_str()));
 
 	if (0 == strcmp(sSignature.c_str(), sSig.c_str()))
 	{
-		cout << "Valid signature !" << endl;
+		WX_LOG(("Valid signature !"));
 		return true;
 	}
 	else
 	{
+		WX_LOG(("Valid failed !"));
 		return false;
 	}
 

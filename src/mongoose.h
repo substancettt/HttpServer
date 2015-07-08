@@ -20,6 +20,7 @@
 
 #define MONGOOSE_VERSION "5.6"
 
+#include <stdarg.h>
 #include <stdio.h>      // required for FILE
 #include <stddef.h>     // required for size_t
 #include <sys/types.h>  // required for time_t
@@ -74,7 +75,7 @@ enum mg_event {
   MG_WS_HANDSHAKE,  // New websocket connection, handshake request
   MG_WS_CONNECT,  // New websocket connection established
   MG_HTTP_ERROR,   // If callback returns MG_FALSE, Mongoose continues with err
-  MG_VALIDATE
+  MG_HTTP_MSG
 };
 typedef int (*mg_handler_t)(struct mg_connection *, enum mg_event);
 
@@ -105,7 +106,7 @@ struct mg_connection *mg_connect(struct mg_server *, const char *);
 void mg_send_status(struct mg_connection *, int status_code);
 void mg_send_header(struct mg_connection *, const char *name, const char *val);
 size_t mg_send_data(struct mg_connection *, const void *data, int data_len);
-size_t mg_send(struct mg_connection *, const char *data);
+size_t mg_RESTful_msg(struct mg_connection *c, const char *data, int opcode);
 size_t mg_printf_data(struct mg_connection *, const char *format, ...);
 size_t mg_vprintf_data(struct mg_connection *, const char *format, va_list ap);
 size_t mg_write(struct mg_connection *, const void *buf, size_t len);
