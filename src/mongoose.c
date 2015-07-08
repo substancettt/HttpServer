@@ -5739,6 +5739,7 @@ static void try_parse(struct connection *conn)
 			const char *cl_hdr = mg_get_header(&conn->mg_conn,
 					"Content-Length");
 			conn->cl = cl_hdr == NULL ? 0 : to64(cl_hdr);
+			 conn->mg_conn.content = conn->ns_conn->recv_iobuf.buf;
 			conn->mg_conn.content_len = (size_t) conn->cl;
 		}
 	}

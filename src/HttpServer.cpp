@@ -23,7 +23,7 @@ static const char token[] = "weixin";
 int * EventHandler(mg_connection *conn, int ev);
 #define EV_HANDLER EventHandler
 
-static void __cdecl signal_handler(int sig_num)
+static void signal_handler(int sig_num)
 {
 	// Reinstantiate signal handler
 	signal(sig_num, signal_handler);

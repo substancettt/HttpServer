@@ -40,11 +40,20 @@ int isTokenValidationUrl(const char * query)
 
 int responseMsg(const char * content)
 {
-    tinyxml2::XMLDocument xmlDoc;
-    if(tinyxml2::XML_SUCCESS != xmlDoc.Parse(content, strlen(content)))
-    {
-        return 1;
-    }
+	if (NULL == content)
+	{
+		WX_LOG(("ERROR: Invalid Content."));
+		return 1;
+	}
+	else
+	{
+		WX_LOG(("INFO: HTTP Content is %s.", content));
+	}
+//    tinyxml2::XMLDocument xmlDoc;
+//    if(tinyxml2::XML_SUCCESS != xmlDoc.Parse(content, strlen(content)))
+//    {
+//        return 1;
+//    }
 
     return 0;
 }
