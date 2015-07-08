@@ -197,8 +197,9 @@ const char * wx_replyMsg(const char * content)
 		WX_LOG(("INFO: Msg: Content is %s.", sContent.c_str()));
 		WX_LOG(("INFO: Msg: MsgId is %s.", sMsgId.c_str()));
 
-		genTextMsgXml(sToUserName,
-				sFromUserName,
+		sContent += "  \r\nƒ„’Ê≈£±∆!!";
+		genTextMsgXml(sFromUserName,
+				sToUserName,
 				sCreateTime,
 				sContent,
 				sMsgId,
