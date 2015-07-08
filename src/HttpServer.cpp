@@ -63,19 +63,22 @@ static void start_mongoose(int argc, char *argv[])
 
 static void handleHttpMsg(mg_connection *conn)
 {
+	const char * response = NULL;
+
 	WX_LOG(("HTTP Message revieved."));
 
 	if (isTokenValidationUrl(conn->query_string))
 	{
-		const char * response = wx_validate(conn->query_string);
-		if (NULL != response)
-		{
-			mg_RESTful_msg(conn, response, 200);
-		}
+		response = wx_validate(conn->query_string);
 	}
 	else
 	{
-		responseMsg(conn->content);
+		response = wx_replyMsg(conn->content);
+	}
+
+	if (NULL != response)
+	{
+		mg_RESTful_msg(conn, response, 200);
 	}
 }
 

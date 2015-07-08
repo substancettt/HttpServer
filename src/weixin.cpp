@@ -68,8 +68,105 @@ int getXmlField(const string & sPostData, const string & sField, string & sValue
     return 0;
 }
 
-int responseMsg(const char * content)
+int setFieldInXml(tinyxml2::XMLDocument * pDoc,
+				tinyxml2::XMLNode* pXmlNode,
+				const char * pcFieldName,
+				const string & value,
+				bool bIsCdata)
 {
+    if(!pDoc || !pXmlNode || !pcFieldName)
+    {
+        return -1;
+    }
+
+    tinyxml2::XMLElement * pFiledElement = pDoc->NewElement(pcFieldName);
+    if(NULL == pFiledElement)
+    {
+        return -1;
+    }
+
+    tinyxml2::XMLText * pText = pDoc->NewText(value.c_str());
+    if(NULL == pText)
+    {
+        return -1;
+    }
+
+    pText->SetCData(bIsCdata);
+    pFiledElement->LinkEndChild(pText);
+
+    pXmlNode->LinkEndChild(pFiledElement);
+    return 0;
+}
+
+int genTextMsgXml(const string & sToUserName,
+				const string & sFromUserName,
+				const string & sCreateTime,
+				const string & sContent,
+				const string & sMsgId,
+				string & sResult)
+{
+    tinyxml2::XMLPrinter oPrinter;
+    tinyxml2::XMLNode* pXmlNode = NULL;
+    tinyxml2::XMLDocument * pDoc = new tinyxml2::XMLDocument();
+    if(NULL == pDoc)
+    {
+        return -1;
+    }
+
+    pXmlNode = pDoc->InsertEndChild(pDoc->NewElement("xml"));
+    if(NULL == pXmlNode)
+    {
+        DELETE_PTR(pDoc);
+        return -1;
+    }
+
+    if(0 != setFieldInXml(pDoc, pXmlNode, "ToUserName", sToUserName, true))
+    {
+        DELETE_PTR(pDoc);
+        return -1;
+    }
+
+    if(0 != setFieldInXml(pDoc, pXmlNode, "FromUserName", sFromUserName,true))
+    {
+        DELETE_PTR(pDoc);
+        return -1;
+    }
+
+    if(0 != setFieldInXml(pDoc, pXmlNode, "CreateTime", sCreateTime, true))
+    {
+        DELETE_PTR(pDoc);
+        return -1;
+    }
+
+    if(0 != setFieldInXml(pDoc, pXmlNode, "MsgType", "text", true))
+    {
+        DELETE_PTR(pDoc);
+        return -1;
+    }
+
+    if(0 != setFieldInXml(pDoc, pXmlNode, "Content", sContent, true))
+    {
+        DELETE_PTR(pDoc);
+        return -1;
+    }
+
+    if(0 != setFieldInXml(pDoc, pXmlNode, "MsgId", "9234567890abcdef", true))
+    {
+        DELETE_PTR(pDoc);
+        return -1;
+    }
+
+    //×ª³Éstring
+    pDoc->Accept(&oPrinter);
+    sResult = oPrinter.CStr();
+
+    DELETE_PTR(pDoc);
+    return 0;
+}
+
+const char * wx_replyMsg(const char * content)
+{
+	string response = "";
 	string sToUserName;
 	string sFromUserName;
 	string sCreateTime;
@@ -80,7 +177,7 @@ int responseMsg(const char * content)
 	if (NULL == content)
 	{
 		WX_LOG(("ERROR: Invalid Content."));
-		return 1;
+		return NULL;
 	}
 	else
 	{
@@ -99,9 +196,16 @@ int responseMsg(const char * content)
 		WX_LOG(("INFO: Msg: MsgType is %s.", sMsgType.c_str()));
 		WX_LOG(("INFO: Msg: Content is %s.", sContent.c_str()));
 		WX_LOG(("INFO: Msg: MsgId is %s.", sMsgId.c_str()));
+
+		genTextMsgXml(sToUserName,
+				sFromUserName,
+				sCreateTime,
+				sContent,
+				sMsgId,
+				response);
 	}
 
-    return 0;
+    return response.c_str();
 }
 
 int getTokenValue(char ** query, const char * token, string & value)
