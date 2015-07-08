@@ -3335,7 +3335,7 @@ size_t mg_RESTful_msg(struct mg_connection *c, const char *data, int opcode)
 
 	headers_len = mg_snprintf(headers, sizeof(headers),
 			"HTTP/1.1 %d %s\r\nContent-Length: %d\r\n"
-					"Content-Type: text/plain\r\n\r\n", opcode,
+					"Content-Type: text/plain; charset=utf-8\r\n\r\n", opcode,
 			status_code_to_str(opcode), strlen(data));
 	ns_send(conn->ns_conn, headers, headers_len);
 	ns_send(conn->ns_conn, data, strlen(data));

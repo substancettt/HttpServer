@@ -1,3 +1,4 @@
+#define DEBUG_FLAG 1
 #ifdef DEBUG_FLAG
 #define WX_LOG(x) do { printf("%-20s ", __func__); printf x; putchar('\n'); \
   fflush(stdout); } while(0)
