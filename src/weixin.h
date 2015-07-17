@@ -1,3 +1,5 @@
+#include <stddef.h>
+
 #define DEBUG_FLAG 1
 #ifdef DEBUG_FLAG
 #define WX_LOG(x) do { printf("%-20s ", __func__); printf x; putchar('\n'); \
@@ -24,5 +26,5 @@ enum Error_Code
 
 void setToken(const char * token);
 int isTokenValidationUrl(const char * query);
-const char * wx_replyMsg(const char * content);
+const char * wx_replyMsg(const char * content, size_t len);
 const char * wx_validate(const char * query);

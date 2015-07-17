@@ -156,7 +156,6 @@ int genTextMsgXml(const string & sToUserName,
         return -1;
     }
 
-    //◊™≥…string
     pDoc->Accept(&oPrinter);
     sResult = oPrinter.CStr();
 
@@ -164,7 +163,7 @@ int genTextMsgXml(const string & sToUserName,
     return 0;
 }
 
-const char * wx_replyMsg(const char * content)
+const char * wx_replyMsg(const char * content, size_t len)
 {
 	string response = "";
 	string sToUserName;
@@ -182,7 +181,8 @@ const char * wx_replyMsg(const char * content)
 	else
 	{
 		string sPostData;
-		sPostData.assign(content);
+		sPostData.assign(content, len);
+		WX_LOG(("INFO: Msg Content is\r\n%s\r\n", sPostData.c_str()));
 		getXmlField(sPostData, "ToUserName", sToUserName);
 		getXmlField(sPostData, "FromUserName", sFromUserName);
 		getXmlField(sPostData, "CreateTime", sCreateTime);
@@ -197,7 +197,7 @@ const char * wx_replyMsg(const char * content)
 		WX_LOG(("INFO: Msg: Content is %s.", sContent.c_str()));
 		WX_LOG(("INFO: Msg: MsgId is %s.", sMsgId.c_str()));
 
-		sContent += "  \r\nƒ„’Ê≈£±∆!!";
+		sContent += "  \r\nHow niubi you are!";
 		genTextMsgXml(sFromUserName,
 				sToUserName,
 				sCreateTime,

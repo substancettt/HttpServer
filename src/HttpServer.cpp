@@ -73,7 +73,7 @@ static void handleHttpMsg(mg_connection *conn)
 	}
 	else
 	{
-		response = wx_replyMsg(conn->content);
+		response = wx_replyMsg(conn->content, conn->content_len);
 	}
 
 	if (NULL != response)
