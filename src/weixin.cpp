@@ -6,18 +6,17 @@
 
 #include "weixin.h"
 #include "SHA1.h"
-#include "tinyxml2.h"
 
 using namespace std;
 
 static string sToken;
 
-void setToken(const char * token)
+void WeixinInterface::wx_setToken(const char * token)
 {
 	sToken.assign(token);
 }
 
-int isTokenValidationUrl(const char * query)
+int WeixinInterface::isTokenValidationUrl(const char * query)
 {
 	if (NULL == query)
 	{
@@ -38,7 +37,7 @@ int isTokenValidationUrl(const char * query)
 	}
 }
 
-int getXmlField(const string & sPostData, const string & sField, string & sValue)
+int WeixinInterface::getXmlField(const string & sPostData, const string & sField, string & sValue)
 {
     tinyxml2::XMLDocument xmlDoc;
     if(tinyxml2::XML_SUCCESS != xmlDoc.Parse(sPostData.c_str(), sPostData.size()))
@@ -68,7 +67,7 @@ int getXmlField(const string & sPostData, const string & sField, string & sValue
     return 0;
 }
 
-int setFieldInXml(tinyxml2::XMLDocument * pDoc,
+int WeixinInterface::setFieldInXml(tinyxml2::XMLDocument * pDoc,
 				tinyxml2::XMLNode* pXmlNode,
 				const char * pcFieldName,
 				const string & value,
@@ -98,7 +97,7 @@ int setFieldInXml(tinyxml2::XMLDocument * pDoc,
     return 0;
 }
 
-int genTextMsgXml(const string & sToUserName,
+int WeixinInterface::genTextMsgXml(const string & sToUserName,
 				const string & sFromUserName,
 				const string & sCreateTime,
 				const string & sContent,
@@ -163,15 +162,33 @@ int genTextMsgXml(const string & sToUserName,
     return 0;
 }
 
-const char * wx_replyMsg(const char * content, size_t len)
+void WeixinInterface::parseCommonPart()
+{
+	if (sPostData.empty())
+	{
+		WX_LOG(("ERROR: Invalid Content."));
+		return;
+	}
+	else
+	{
+		getXmlField(sPostData, "ToUserName", sToUserName);
+		getXmlField(sPostData, "FromUserName", sFromUserName);
+		getXmlField(sPostData, "CreateTime", sCreateTime);
+		getXmlField(sPostData, "MsgType", sMsgType);
+		getXmlField(sPostData, "MsgId", sMsgId);
+
+		WX_LOG(("INFO: Msg: ToUserName is %s.", sToUserName.c_str()));
+		WX_LOG(("INFO: Msg: FromUserName is %s.", sFromUserName.c_str()));
+		WX_LOG(("INFO: Msg: CreateTime is %s.", sCreateTime.c_str()));
+		WX_LOG(("INFO: Msg: MsgType is %s.", sMsgType.c_str()));
+		WX_LOG(("INFO: Msg: MsgId is %s.", sMsgId.c_str()));
+	}
+
+}
+
+const char * WeixinInterface::wx_parseMsg(const char * content, size_t len)
 {
 	string response = "";
-	string sToUserName;
-	string sFromUserName;
-	string sCreateTime;
-	string sMsgType;
-	string sContent;
-	string sMsgId;
 
 	if (NULL == content)
 	{
@@ -180,14 +197,19 @@ const char * wx_replyMsg(const char * content, size_t len)
 	}
 	else
 	{
-		string sPostData;
+		sPostData.clear();
 		sPostData.assign(content, len);
 		WX_LOG(("INFO: Msg Content is\r\n%s\r\n", sPostData.c_str()));
-		getXmlField(sPostData, "ToUserName", sToUserName);
-		getXmlField(sPostData, "FromUserName", sFromUserName);
-		getXmlField(sPostData, "CreateTime", sCreateTime);
-		getXmlField(sPostData, "MsgType", sMsgType);
+
+		parseCommonPart();
+
+		if (strcmp(sMsgType.c_str(), ""))
 		getXmlField(sPostData, "Content", sContent);
+		getXmlField(sPostData, "Title", sTitle);
+		getXmlField(sPostData, "Description", sDescription);
+		getXmlField(sPostData, "Url", sUrl);
+		getXmlField(sPostData, "MsgType", sMsgType);
+		getXmlField(sPostData, "MsgType", sMsgType);
 		getXmlField(sPostData, "MsgId", sMsgId);
 
 		WX_LOG(("INFO: Msg: ToUserName is %s.", sToUserName.c_str()));
@@ -209,7 +231,7 @@ const char * wx_replyMsg(const char * content, size_t len)
     return response.c_str();
 }
 
-int getTokenValue(char ** query, const char * token, string & value)
+int WeixinInterface::getTokenValue(char ** query, const char * token, string & value)
 {
 	size_t posToken = 0;
 	size_t posEqualSign = 0;
@@ -256,7 +278,7 @@ int getTokenValue(char ** query, const char * token, string & value)
 	return Return_Code_OK;
 }
 
-string toHexString(const char * pInData)
+string WeixinInterface::toHexString(const char * pInData)
 {
 	string hexStr;
 	unsigned int len = strlen(pInData);
@@ -285,10 +307,9 @@ string toHexString(const char * pInData)
 	}
 
 	return hexStr;
-
 }
 
-bool validateSignature(string sSignature, string sTimeStamp, string sNonce)
+bool WeixinInterface::validateSignature(string sSignature, string sTimeStamp, string sNonce)
 {
 	char sha1[21] = {0};
 
@@ -323,7 +344,7 @@ bool validateSignature(string sSignature, string sTimeStamp, string sNonce)
 
 }
 
-const char * wx_validate(const char * query)
+const char * WeixinInterface::wx_validate(const char * query)
 {
 	int ret = Return_Code_Invalid_Url;
 	string signature;

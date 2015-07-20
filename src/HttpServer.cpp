@@ -23,6 +23,8 @@ static const char token[] = "weixin";
 int * EventHandler(mg_connection *conn, int ev);
 #define EV_HANDLER EventHandler
 
+WeixinInterface wx_interface;
+
 static void signal_handler(int sig_num)
 {
 	// Reinstantiate signal handler
@@ -67,13 +69,13 @@ static void handleHttpMsg(mg_connection *conn)
 
 	WX_LOG(("HTTP Message revieved."));
 
-	if (isTokenValidationUrl(conn->query_string))
+	if (wx_interface.isTokenValidationUrl(conn->query_string))
 	{
-		response = wx_validate(conn->query_string);
+		response = wx_interface.wx_validate(conn->query_string);
 	}
 	else
 	{
-		response = wx_replyMsg(conn->content, conn->content_len);
+		response = wx_interface.wx_parseMsg(conn->content, conn->content_len);
 	}
 
 	if (NULL != response)
@@ -127,7 +129,7 @@ int * EventHandler(mg_connection *conn, int ev)
 
 int main(int argc, char *argv[])
 {
-	setToken(token);
+	wx_interface.wx_setToken(token);
 	start_mongoose(argc, argv);
 	printf("%s serving on port %s\n", server_name,
 			mg_get_option(server, "listening_port"));
