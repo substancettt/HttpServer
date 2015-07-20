@@ -129,7 +129,10 @@ int * EventHandler(mg_connection *conn, int ev)
 
 int main(int argc, char *argv[])
 {
-	wx_interface.wx_setToken(token);
+	WeixinInterface::Options opt;
+	opt.token.assign(token);
+	wx_interface.wx_init(opt);
+
 	start_mongoose(argc, argv);
 	printf("%s serving on port %s\n", server_name,
 			mg_get_option(server, "listening_port"));

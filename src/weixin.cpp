@@ -4,6 +4,7 @@
 #include <vector>
 #include <algorithm>
 
+#include "boost/foreach.hpp"
 #include "weixin.h"
 #include "SHA1.h"
 
@@ -11,9 +12,9 @@ using namespace std;
 
 static string sToken;
 
-void WeixinInterface::wx_setToken(const char * token)
+void WeixinInterface::setToken(const string & token)
 {
-	sToken.assign(token);
+	sToken = token;
 }
 
 int WeixinInterface::isTokenValidationUrl(const char * query)
@@ -162,6 +163,21 @@ int WeixinInterface::genTextMsgXml(const string & sToUserName,
     return 0;
 }
 
+
+unsigned int WeixinInterface::mapMsgType(const string & sType)
+{
+	map <string, Msg_Type>::iterator iter = dMsgTypeMap.find("sType");
+	if (iter != dMsgTypeMap.end())
+	{
+		eMsgType = iter->second;
+		return iter->second;
+	}
+	else
+	{
+		return Msg_Type_Invalid;
+	}
+}
+
 void WeixinInterface::parseCommonPart()
 {
 	if (sPostData.empty())
@@ -175,6 +191,7 @@ void WeixinInterface::parseCommonPart()
 		getXmlField(sPostData, "FromUserName", sFromUserName);
 		getXmlField(sPostData, "CreateTime", sCreateTime);
 		getXmlField(sPostData, "MsgType", sMsgType);
+
 		getXmlField(sPostData, "MsgId", sMsgId);
 
 		WX_LOG(("INFO: Msg: ToUserName is %s.", sToUserName.c_str()));
@@ -182,6 +199,8 @@ void WeixinInterface::parseCommonPart()
 		WX_LOG(("INFO: Msg: CreateTime is %s.", sCreateTime.c_str()));
 		WX_LOG(("INFO: Msg: MsgType is %s.", sMsgType.c_str()));
 		WX_LOG(("INFO: Msg: MsgId is %s.", sMsgId.c_str()));
+
+		WX_LOG(("INFO: Msg: MsgType value is %d.", mapMsgType(sMsgType)));
 	}
 
 }
@@ -282,7 +301,7 @@ string WeixinInterface::toHexString(const char * pInData)
 {
 	string hexStr;
 	unsigned int len = strlen(pInData);
-	for (int i = 0; i < len; i++)
+	for (unsigned int i = 0; i < len; i++)
 	{
 		unsigned char highVal = (pInData[i] & 0xF0) >> 4;
 		unsigned char lowVal = pInData[i] & 0x0F;
@@ -391,4 +410,15 @@ const char * WeixinInterface::wx_validate(const char * query)
 	{
 		return NULL;
 	}
+}
+
+void WeixinInterface::wx_init(Options opt)
+{
+	dMsgTypeMap.insert(pair<string, Msg_Type>("text", Msg_Type_Text));
+	dMsgTypeMap.insert(pair<string, Msg_Type>("voice", Msg_Type_Voice));
+	dMsgTypeMap.insert(pair<string, Msg_Type>("image", Msg_Type_Image));
+	dMsgTypeMap.insert(pair<string, Msg_Type>("location", Msg_Type_Location));
+	dMsgTypeMap.insert(pair<string, Msg_Type>("event", Msg_Type_Event));
+
+	setToken(opt.token);
 }
