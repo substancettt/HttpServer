@@ -36,9 +36,11 @@ class WeixinInterface
 	enum Msg_Type
 	{
 		Msg_Type_Text = 1,
-		Msg_Type_Voice,
 		Msg_Type_Image,
+		Msg_Type_Voice,
+		Msg_Type_Video,
 		Msg_Type_Location,
+		Msg_Type_Link,
 		Msg_Type_Event,
 		Msg_Type_Invalid
 	};
@@ -63,10 +65,21 @@ private:
 	string sCreateTime;
 	string sMsgType;
 	string sContent;
+	string sMediaId;
+	string sFormat;
+	string sRecognition;
+	string sThumbMediaId;
+	string sPicUrl;
+	string sLocation_X;
+	string sLocation_Y;
+	string sScale;
+	string sLabel;
 	string sTitle;
 	string sDescription;
 	string sUrl;
-	string sLocation_X;
+	string sEvent;
+	string sEventKey;
+
 	string sMsgId;
 
 	Msg_Type eMsgType;
@@ -97,6 +110,13 @@ private:
 					string & sResult);
 	unsigned int mapMsgType(const string & sType);
 	void parseCommonPart();
+	void parseTextPart();
+	void parseImagePart();
+	void parseVoicePart();
+	void parseVideoPart();
+	void parseLocationPart();
+	void parseLinkPart();
+	void parseEventPart();
 	int getTokenValue(char ** query, const char * token, string & value);
 	string toHexString(const char * pInData);
 	bool validateSignature(string sSignature, string sTimeStamp, string sNonce);

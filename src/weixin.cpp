@@ -166,7 +166,7 @@ int WeixinInterface::genTextMsgXml(const string & sToUserName,
 
 unsigned int WeixinInterface::mapMsgType(const string & sType)
 {
-	map <string, Msg_Type>::iterator iter = dMsgTypeMap.find("sType");
+	map <string, Msg_Type>::iterator iter = dMsgTypeMap.find(sType);
 	if (iter != dMsgTypeMap.end())
 	{
 		eMsgType = iter->second;
@@ -205,6 +205,127 @@ void WeixinInterface::parseCommonPart()
 
 }
 
+void WeixinInterface::parseTextPart()
+{
+	if (sPostData.empty())
+	{
+		WX_LOG(("ERROR: Invalid Content."));
+		return;
+	}
+	else
+	{
+		getXmlField(sPostData, "Content", sContent);
+		WX_LOG(("INFO: Msg: Content is %s.", sContent.c_str()));
+	}
+}
+
+void WeixinInterface::parseImagePart()
+{
+	if (sPostData.empty())
+	{
+		WX_LOG(("ERROR: Invalid Content."));
+		return;
+	}
+	else
+	{
+		getXmlField(sPostData, "PicUrl", sPicUrl);
+		getXmlField(sPostData, "MediaId", sMediaId);
+		WX_LOG(("INFO: Msg: PicUrl is %s.", sPicUrl.c_str()));
+		WX_LOG(("INFO: Msg: MediaId is %s.", sMediaId.c_str()));
+	}
+}
+
+void WeixinInterface::parseVoicePart()
+{
+	if (sPostData.empty())
+	{
+		WX_LOG(("ERROR: Invalid Content."));
+		return;
+	}
+	else
+	{
+		getXmlField(sPostData, "MediaId", sMediaId);
+		getXmlField(sPostData, "Format", sFormat);
+		getXmlField(sPostData, "Recognition", sRecognition);
+		WX_LOG(("INFO: Msg: MediaId is %s.", sMediaId.c_str()));
+		WX_LOG(("INFO: Msg: Format is %s.", sFormat.c_str()));
+		WX_LOG(("INFO: Msg: Recognition is %s.", sRecognition.c_str()));
+	}
+}
+
+void WeixinInterface::parseVideoPart()
+{
+	if (sPostData.empty())
+	{
+		WX_LOG(("ERROR: Invalid Content."));
+		return;
+	}
+	else
+	{
+		getXmlField(sPostData, "MediaId", sMediaId);
+		getXmlField(sPostData, "ThumbMediaId", sThumbMediaId);
+		WX_LOG(("INFO: Msg: MediaId is %s.", sMediaId.c_str()));
+		WX_LOG(("INFO: Msg: ThumbMediaId is %s.", sThumbMediaId.c_str()));
+	}
+}
+
+void WeixinInterface::parseLocationPart()
+{
+	if (sPostData.empty())
+	{
+		WX_LOG(("ERROR: Invalid Content."));
+		return;
+	}
+	else
+	{
+		getXmlField(sPostData, "Location_X", sLocation_X);
+		getXmlField(sPostData, "Location_Y", sLocation_Y);
+		getXmlField(sPostData, "Scale", sScale);
+		getXmlField(sPostData, "Label", sLabel);
+
+		WX_LOG(("INFO: Msg: Location_X is %s.", sLocation_X.c_str()));
+		WX_LOG(("INFO: Msg: Location_Y is %s.", sLocation_Y.c_str()));
+		WX_LOG(("INFO: Msg: Scale is %s.", sScale.c_str()));
+		WX_LOG(("INFO: Msg: Label is %s.", sLabel.c_str()));
+	}
+}
+
+void WeixinInterface::parseLinkPart()
+{
+	if (sPostData.empty())
+	{
+		WX_LOG(("ERROR: Invalid Content."));
+		return;
+	}
+	else
+	{
+		getXmlField(sPostData, "Title", sTitle);
+		getXmlField(sPostData, "Description", sDescription);
+		getXmlField(sPostData, "Url", sUrl);
+
+		WX_LOG(("INFO: Msg: Title is %s.", sTitle.c_str()));
+		WX_LOG(("INFO: Msg: Description is %s.", sDescription.c_str()));
+		WX_LOG(("INFO: Msg: Url is %s.", sUrl.c_str()));
+	}
+}
+
+void WeixinInterface::parseEventPart()
+{
+	if (sPostData.empty())
+	{
+		WX_LOG(("ERROR: Invalid Content."));
+		return;
+	}
+	else
+	{
+		getXmlField(sPostData, "Event", sEvent);
+		getXmlField(sPostData, "EventKey", sEventKey);
+
+		WX_LOG(("INFO: Msg: Event is %s.", sEvent.c_str()));
+		WX_LOG(("INFO: Msg: EventKey is %s.", sEventKey.c_str()));
+	}
+}
+
 const char * WeixinInterface::wx_parseMsg(const char * content, size_t len)
 {
 	string response = "";
@@ -222,23 +343,36 @@ const char * WeixinInterface::wx_parseMsg(const char * content, size_t len)
 
 		parseCommonPart();
 
-		if (strcmp(sMsgType.c_str(), ""))
-		getXmlField(sPostData, "Content", sContent);
-		getXmlField(sPostData, "Title", sTitle);
-		getXmlField(sPostData, "Description", sDescription);
-		getXmlField(sPostData, "Url", sUrl);
-		getXmlField(sPostData, "MsgType", sMsgType);
-		getXmlField(sPostData, "MsgType", sMsgType);
-		getXmlField(sPostData, "MsgId", sMsgId);
+		switch (eMsgType)
+		{
+			case Msg_Type_Text:
+				parseTextPart();
+				break;
+			case Msg_Type_Image:
+				parseImagePart();
+				break;
+			case Msg_Type_Voice:
+				parseVoicePart();
+				break;
+			case Msg_Type_Video:
+				parseVideoPart();
+				break;
+			case Msg_Type_Location:
+				parseLocationPart();
+				break;
+			case Msg_Type_Link:
+				parseLinkPart();
+				break;
+			case Msg_Type_Event:
+				parseEventPart();
+				break;
+			case Msg_Type_Invalid:
+			default:
+				WX_LOG(("INFO: Invalid Message Type[%u].\r\n", eMsgType));
+				break;
+		}
 
-		WX_LOG(("INFO: Msg: ToUserName is %s.", sToUserName.c_str()));
-		WX_LOG(("INFO: Msg: FromUserName is %s.", sFromUserName.c_str()));
-		WX_LOG(("INFO: Msg: CreateTime is %s.", sCreateTime.c_str()));
-		WX_LOG(("INFO: Msg: MsgType is %s.", sMsgType.c_str()));
-		WX_LOG(("INFO: Msg: Content is %s.", sContent.c_str()));
-		WX_LOG(("INFO: Msg: MsgId is %s.", sMsgId.c_str()));
-
-		sContent += "  \r\nHow niubi you are!";
+		sContent = "It's a " + sMsgType + " Message. How niubi you are!";
 		genTextMsgXml(sFromUserName,
 				sToUserName,
 				sCreateTime,
@@ -415,9 +549,11 @@ const char * WeixinInterface::wx_validate(const char * query)
 void WeixinInterface::wx_init(Options opt)
 {
 	dMsgTypeMap.insert(pair<string, Msg_Type>("text", Msg_Type_Text));
-	dMsgTypeMap.insert(pair<string, Msg_Type>("voice", Msg_Type_Voice));
 	dMsgTypeMap.insert(pair<string, Msg_Type>("image", Msg_Type_Image));
+	dMsgTypeMap.insert(pair<string, Msg_Type>("voice", Msg_Type_Voice));
+	dMsgTypeMap.insert(pair<string, Msg_Type>("video", Msg_Type_Video));
 	dMsgTypeMap.insert(pair<string, Msg_Type>("location", Msg_Type_Location));
+	dMsgTypeMap.insert(pair<string, Msg_Type>("link", Msg_Type_Link));
 	dMsgTypeMap.insert(pair<string, Msg_Type>("event", Msg_Type_Event));
 
 	setToken(opt.token);
